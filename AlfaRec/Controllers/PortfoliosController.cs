@@ -6,61 +6,62 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using FundConnRec.API.Models;
+using FundConnRec.Models.Models;
 
 namespace FundConnRec.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ProductsController : ControllerBase
+    public class PortfoliosController : ControllerBase
     {
         private readonly FundConnContext _context;
 
-        public ProductsController(FundConnContext context)
+        public PortfoliosController(FundConnContext context)
         {
             _context = context;
         }
 
-        // GET: api/Products
+        // GET: api/Portfolios
         [HttpGet]
-        public IEnumerable<Product> GetProducts()
+        public IEnumerable<Portfolio> GetPortfolios()
         {
-            return _context.Products;
+            return _context.Portfolios;
         }
 
-        // GET: api/Products/5
+        // GET: api/Portfolios/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetProduct([FromRoute] int id)
+        public async Task<IActionResult> GetPortfolio([FromRoute] int id)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var product = await _context.Products.FindAsync(id);
+            var portfolio = await _context.Portfolios.FindAsync(id);
 
-            if (product == null)
+            if (portfolio == null)
             {
                 return NotFound();
             }
 
-            return Ok(product);
+            return Ok(portfolio);
         }
 
-        // PUT: api/Products/5
+        // PUT: api/Portfolios/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutProduct([FromRoute] int id, [FromBody] Product product)
+        public async Task<IActionResult> PutPortfolio([FromRoute] int id, [FromBody] Portfolio portfolio)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (id != product.ProductId)
+            if (id != portfolio.PortfolioId)
             {
                 return BadRequest();
             }
 
-            _context.Entry(product).State = EntityState.Modified;
+            _context.Entry(portfolio).State = EntityState.Modified;
 
             try
             {
@@ -68,7 +69,7 @@ namespace FundConnRec.API.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!ProductExists(id))
+                if (!PortfolioExists(id))
                 {
                     return NotFound();
                 }
@@ -81,51 +82,45 @@ namespace FundConnRec.API.Controllers
             return NoContent();
         }
 
-        // POST: api/Products
+        // POST: api/Portfolios
         [HttpPost]
-        public async Task<IActionResult> PostProduct([FromBody] Product product)
+        public async Task<IActionResult> PostPortfolio([FromBody] Portfolio portfolio)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            try
-            {
-                product.ProductId = 0;
-                _context.Products.Add(product);
-                await _context.SaveChangesAsync();
-            }
-            catch(Exception ex)
-            {
-                throw ex;
-            }
-            return CreatedAtAction("GetProduct", new { id = product.ProductId }, product);
+
+            _context.Portfolios.Add(portfolio);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetPortfolio", new { id = portfolio.PortfolioId }, portfolio);
         }
 
-        // DELETE: api/Products/5
+        // DELETE: api/Portfolios/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProduct([FromRoute] int id)
+        public async Task<IActionResult> DeletePortfolio([FromRoute] int id)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var product = await _context.Products.FindAsync(id);
-            if (product == null)
+            var portfolio = await _context.Portfolios.FindAsync(id);
+            if (portfolio == null)
             {
                 return NotFound();
             }
 
-            _context.Products.Remove(product);
+            _context.Portfolios.Remove(portfolio);
             await _context.SaveChangesAsync();
 
-            return Ok(product);
+            return Ok(portfolio);
         }
 
-        private bool ProductExists(int id)
+        private bool PortfolioExists(int id)
         {
-            return _context.Products.Any(e => e.ProductId == id);
+            return _context.Portfolios.Any(e => e.PortfolioId == id);
         }
     }
 }
