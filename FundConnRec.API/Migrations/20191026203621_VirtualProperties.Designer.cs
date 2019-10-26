@@ -4,14 +4,16 @@ using FundConnRec.API.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FundConnRec.API.Migrations
 {
     [DbContext(typeof(FundConnContext))]
-    partial class FundConnContextModelSnapshot : ModelSnapshot
+    [Migration("20191026203621_VirtualProperties")]
+    partial class VirtualProperties
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

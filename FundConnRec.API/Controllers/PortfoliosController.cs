@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using FundConnRec.API.Models;
 using FundConnRec.Models.Models;
 using FundConnRec.API.Repositories.Interfaces;
+using System.Net;
 
 namespace FundConnRec.API.Controllers
 {
@@ -27,9 +28,17 @@ namespace FundConnRec.API.Controllers
 
         // GET: api/Portfolios
         [HttpGet]
-        public IEnumerable<Portfolio> GetPortfolios()
+        public async Task<IActionResult> GetPortfolios()
         {
-            return _context.Portfolios;
+            try
+            {
+                IEnumerable<Portfolio> x = _portfolioRepository.GetAll();
+                return Ok(x);
+            }
+            catch(Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
         }
 
         // GET: api/Portfolios/5
@@ -52,7 +61,7 @@ namespace FundConnRec.API.Controllers
             }
             catch(Exception ex)
             {
-                return null;
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
             }
         }
 
@@ -99,11 +108,16 @@ namespace FundConnRec.API.Controllers
             {
                 return BadRequest(ModelState);
             }
-
-            _context.Portfolios.Add(portfolio);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetPortfolio", new { id = portfolio.PortfolioId }, portfolio);
+            try
+            {
+                _context.Portfolios.Add(portfolio);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+            return CreatedAtAction("GetPortfolio", new { isin = portfolio.ISIN, date = portfolio.Date }, portfolio);
         }
 
         // DELETE: api/Portfolios/5

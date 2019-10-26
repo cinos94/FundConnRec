@@ -13,6 +13,7 @@ namespace FundConnRec.API.Models
         {
 
         }
+
         public virtual DbSet<Portfolio> Portfolios { get; set; }
 
         public virtual DbSet<Position> Positions { get; set; }

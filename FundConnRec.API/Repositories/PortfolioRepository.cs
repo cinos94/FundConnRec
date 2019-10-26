@@ -1,6 +1,7 @@
 ﻿using FundConnRec.API.Models;
 using FundConnRec.API.Repositories.Interfaces;
 using FundConnRec.Models.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,7 +35,8 @@ namespace FundConnRec.API.Repositories
 
         public IEnumerable<Portfolio> GetAll()
         {
-            throw new NotImplementedException();
+            _context.Positions.Include(x => x.Security).ToList();
+            return _context.Portfolios.Include(x => x.Positions).ToList();
         }
 
         public void Update(Portfolio dbEntity, Portfolio entity)

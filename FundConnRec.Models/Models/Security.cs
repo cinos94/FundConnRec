@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -15,5 +16,8 @@ namespace FundConnRec.Models.Models
         public int Type { get; set; }
 
         public string Country { get; set; }
+
+        [JsonIgnore]
+        public ICollection<Position> Positions { get; set; }
     }
 }
