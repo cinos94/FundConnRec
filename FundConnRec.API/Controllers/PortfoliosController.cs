@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using FundConnRec.API.Models;
 using FundConnRec.Models.Models;
+using FundConnRec.API.Repositories.Interfaces;
 
 namespace FundConnRec.API.Controllers
 {
@@ -16,9 +17,12 @@ namespace FundConnRec.API.Controllers
     {
         private readonly FundConnContext _context;
 
-        public PortfoliosController(FundConnContext context)
+        private readonly IDataRepository<Portfolio> _portfolioRepository;
+
+        public PortfoliosController(FundConnContext context, IDataRepository<Portfolio> dataRepository)
         {
             _context = context;
+            _portfolioRepository = dataRepository;
         }
 
         // GET: api/Portfolios
@@ -29,8 +33,8 @@ namespace FundConnRec.API.Controllers
         }
 
         // GET: api/Portfolios/5
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetPortfolio([FromRoute] int id)
+        [HttpGet("{isin}")]
+        public async Task<IActionResult> GetPortfolio([FromRoute] string isin, [FromQuery]DateTime date)
         {
             if (!ModelState.IsValid)
             {
@@ -38,7 +42,7 @@ namespace FundConnRec.API.Controllers
             }
             try
             {
-                var portfolio = await _context.Portfolios.FindAsync(id);
+                var portfolio = await _context.Portfolios.Where(x => x.ISIN == isin && x.Date == date.Date).FirstOrDefaultAsync();
                 if (portfolio == null)
                 {
                     return NotFound();

@@ -1,4 +1,7 @@
 ﻿using FundConnRec.API.Models;
+using FundConnRec.API.Repositories;
+using FundConnRec.API.Repositories.Interfaces;
+using FundConnRec.Models.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -24,6 +27,7 @@ namespace FundConnRec.API
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddDbContext<FundConnContext>
                 (options => options.UseSqlServer(Configuration.GetConnectionString("FundConnRecDatabase")));
+            services.AddScoped<IDataRepository<Portfolio>, PortfolioRepository>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Info { Title = "FundConnRec", Version = "v1" });
