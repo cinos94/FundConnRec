@@ -36,15 +36,20 @@ namespace FundConnRec.API.Controllers
             {
                 return BadRequest(ModelState);
             }
-
-            var portfolio = await _context.Portfolios.FindAsync(id);
-
-            if (portfolio == null)
+            try
             {
-                return NotFound();
-            }
+                var portfolio = await _context.Portfolios.FindAsync(id);
+                if (portfolio == null)
+                {
+                    return NotFound();
+                }
 
-            return Ok(portfolio);
+                return Ok(portfolio);
+            }
+            catch(Exception ex)
+            {
+                return null;
+            }
         }
 
         // PUT: api/Portfolios/5

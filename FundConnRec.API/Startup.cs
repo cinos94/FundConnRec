@@ -26,7 +26,7 @@ namespace FundConnRec.API
                 (options => options.UseSqlServer(Configuration.GetConnectionString("FundConnRecDatabase")));
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
+                c.SwaggerDoc("v1", new Info { Title = "FundConnRec", Version = "v1" });
             });
         }
 
