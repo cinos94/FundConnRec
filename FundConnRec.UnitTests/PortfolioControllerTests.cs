@@ -37,6 +37,7 @@ namespace FundConnRec.UnitTests
             IActionResult actionResult = await portfolioController.GetPortfolio(isin, date);
             var okResult = actionResult as OkObjectResult;
             var result = okResult.Value as Portfolio;
+
             Assert.NotNull(result);
             Assert.Equal(result.ISIN, toBeReturned.ISIN);
             Assert.Equal(result.Date, toBeReturned.Date);
