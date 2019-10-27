@@ -18,13 +18,10 @@ namespace FundConnRec.API.Controllers
     [ApiController]
     public class PortfoliosController : ControllerBase
     {
-        private readonly FundConnContext _context;
-
         private readonly IPortfolioRepository _portfolioRepository;
 
-        public PortfoliosController(FundConnContext context, IPortfolioRepository dataRepository)
+        public PortfoliosController(IPortfolioRepository dataRepository)
         {
-            _context = context;
             _portfolioRepository = dataRepository;
         }
 
@@ -58,7 +55,6 @@ namespace FundConnRec.API.Controllers
                 {
                     return NotFound();
                 }
-
                 return Ok(portfolio);
             }
             catch(Exception ex)
@@ -75,30 +71,28 @@ namespace FundConnRec.API.Controllers
             {
                 return BadRequest(ModelState);
             }
-
             if (id != portfolio.PortfolioId)
             {
                 return BadRequest();
             }
-
-            _context.Entry(portfolio).State = EntityState.Modified;
-
             try
-            {
-                await _context.SaveChangesAsync();
+            { 
+                Portfolio portfolioInDB = await _portfolioRepository.Get(id);
+                _portfolioRepository.Update(portfolioInDB, portfolio);
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!PortfolioExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                //log
+                return StatusCode((int)HttpStatusCode.InternalServerError, "Unknown error");
             }
-
+            catch (ArgumentException)
+            {
+                return NotFound();
+            }
+            catch(Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
             return NoContent();
         }
 
@@ -152,11 +146,6 @@ namespace FundConnRec.API.Controllers
             {
                 return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
             }
-        }
-
-        private bool PortfolioExists(int id)
-        {
-            return _context.Portfolios.Any(e => e.PortfolioId == id);
         }
     }
 }

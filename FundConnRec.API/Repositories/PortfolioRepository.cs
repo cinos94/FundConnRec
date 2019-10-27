@@ -68,7 +68,7 @@ namespace FundConnRec.API.Repositories
 
         public async Task<Portfolio> Get(long id)
         {
-            return await _context.Portfolios.Where(x => x.PortfolioId == id).FirstOrDefaultAsync();
+            return await _context.Portfolios.AsNoTracking().Where(x => x.PortfolioId == id).FirstOrDefaultAsync();
         }
 
         public async Task<Portfolio> Get(string isin, DateTime date)
@@ -81,9 +81,16 @@ namespace FundConnRec.API.Repositories
             return _context.Portfolios.ToList();
         }
 
-        public void Update(Portfolio dbEntity, Portfolio entity)
+        public void Update(Portfolio dbEntity, Portfolio portfolio)
         {
-            throw new NotImplementedException();
+            if(dbEntity == null)
+            {
+                throw new ArgumentException(nameof(Portfolio));
+            }
+            portfolio.Date = portfolio.Date.Date;
+            portfolio.PortfolioId = dbEntity.PortfolioId;
+            _context.Entry(portfolio).State = EntityState.Modified;
+            _context.SaveChanges();
         }
     }
 }

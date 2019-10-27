@@ -61,6 +61,10 @@ namespace FundConnRec.API.Repositories.Interfaces
 
         public void Update(Security dbEntity, Security entity)
         {
+            if(dbEntity == null)
+            {
+                throw new ArgumentException(nameof(Security));
+            }
             entity.SecurityId = dbEntity.SecurityId;
             _context.Entry(entity).State = EntityState.Modified;
             _context.SaveChanges();
