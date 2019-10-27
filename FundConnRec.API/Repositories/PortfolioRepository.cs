@@ -3,6 +3,8 @@ using FundConnRec.API.Repositories.Interfaces;
 using FundConnRec.Models.Exceptions;
 using FundConnRec.Models.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,10 +18,13 @@ namespace FundConnRec.API.Repositories
 
         private readonly ISecurityRepository _securityRepository;
 
-        public PortfolioRepository(FundConnContext context, ISecurityRepository securityRepository)
+        private readonly IConfiguration _configurationRepository;
+
+        public PortfolioRepository(FundConnContext context, ISecurityRepository securityRepository, IConfiguration configuration)
         {
             _context = context;
             _securityRepository = securityRepository;
+            _configurationRepository = configuration;
         }
 
         public async Task Add(Portfolio portfolio)
@@ -33,6 +38,16 @@ namespace FundConnRec.API.Repositories
                 await _context.SaveChangesAsync();
             }
             else throw new ChangeConflictException("There is already Portfolio with ISIN and Date speicfied");
+        }
+
+        public bool IsInToleranceRange(Portfolio portfolio)
+        {
+            decimal.TryParse(_configurationRepository["AppSettings:PortfolioValueTolerance"], out decimal ToleranceValue);
+            if (portfolio.MarketValue * ToleranceValue > Math.Abs(portfolio.MarketValue - portfolio.Positions.Sum(x => x.MarketValue)))
+            {
+                return true;
+            }
+            else return false;
         }
 
         public async Task Delete(Portfolio entity)

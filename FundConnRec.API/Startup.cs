@@ -30,6 +30,8 @@ namespace FundConnRec.API
                 (options => options.UseSqlServer(Configuration.GetConnectionString("FundConnRecDatabase")));
             services.AddScoped<IPortfolioRepository, PortfolioRepository>();
             services.AddScoped<ISecurityRepository, SecurityRepository>();
+            services.Configure<ConfigurationRepository>(Configuration.GetSection("AppSettings"));
+            //var x = Configuration["AppSettings:PortfolioValueTolerance"];
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Info { Title = "FundConnRec", Version = "v1" });
