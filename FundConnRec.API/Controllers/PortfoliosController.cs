@@ -118,6 +118,10 @@ namespace FundConnRec.API.Controllers
             {
                 return StatusCode((int)HttpStatusCode.Conflict, ex.Message);
             }
+            catch(ToleranceOfOutRangeException ex)
+            {
+                return StatusCode((int)HttpStatusCode.UnprocessableEntity, ex.Message);
+            }
             catch (Exception ex)
             {
                 return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);

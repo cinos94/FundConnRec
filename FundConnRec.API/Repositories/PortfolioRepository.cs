@@ -31,13 +31,17 @@ namespace FundConnRec.API.Repositories
         {
             portfolio.Date = portfolio.Date.Date;
             Portfolio portfolioInDB = await Get(portfolio.ISIN, portfolio.Date);
-            if (portfolioInDB == null)
+            if (IsInToleranceRange(portfolio))
             {
-                await _securityRepository.AddRange(portfolio.Positions.Select(x => x.Security));
-                _context.Portfolios.Add(portfolio);
-                await _context.SaveChangesAsync();
+                if (portfolioInDB == null)
+                {
+                    await _securityRepository.AddRange(portfolio.Positions.Select(x => x.Security));
+                    _context.Portfolios.Add(portfolio);
+                    await _context.SaveChangesAsync();
+                }
+                else throw new ChangeConflictException("There is already Portfolio with ISIN and Date speicfied");
             }
-            else throw new ChangeConflictException("There is already Portfolio with ISIN and Date speicfied");
+            else throw new ToleranceOfOutRangeException("Difference between portfolio market value and sum of positions' market value is too high");
         }
 
         public bool IsInToleranceRange(Portfolio portfolio)
