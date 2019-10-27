@@ -9,6 +9,8 @@ using FundConnRec.API.Models;
 using FundConnRec.Models.Models;
 using FundConnRec.API.Repositories.Interfaces;
 using System.Net;
+using FundConnRec.API.Repositories;
+using FundConnRec.Models.Exceptions;
 
 namespace FundConnRec.API.Controllers
 {
@@ -111,6 +113,10 @@ namespace FundConnRec.API.Controllers
             try
             {
                 await _portfolioRepository.Add(portfolio);
+            }
+            catch(ChangeConflictException ex)
+            {
+                return StatusCode((int)HttpStatusCode.Conflict, ex.Message);
             }
             catch (Exception ex)
             {
