@@ -28,7 +28,7 @@ namespace FundConnRec.API
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddDbContext<FundConnContext>
                 (options => options.UseSqlServer(Configuration.GetConnectionString("FundConnRecDatabase")));
-            services.AddScoped<IDataRepository<Portfolio>, PortfolioRepository>();
+            services.AddScoped<IPortfolioRepository, PortfolioRepository>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Info { Title = "FundConnRec", Version = "v1" });

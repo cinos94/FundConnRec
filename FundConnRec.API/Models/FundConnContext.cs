@@ -13,7 +13,9 @@ namespace FundConnRec.API.Models
         {
 
         }
-
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+             => optionsBuilder
+                   .UseLazyLoadingProxies();
         public virtual DbSet<Portfolio> Portfolios { get; set; }
 
         public virtual DbSet<Position> Positions { get; set; }

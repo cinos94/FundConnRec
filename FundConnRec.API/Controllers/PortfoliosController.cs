@@ -18,9 +18,9 @@ namespace FundConnRec.API.Controllers
     {
         private readonly FundConnContext _context;
 
-        private readonly IDataRepository<Portfolio> _portfolioRepository;
+        private readonly IPortfolioRepository _portfolioRepository;
 
-        public PortfoliosController(FundConnContext context, IDataRepository<Portfolio> dataRepository)
+        public PortfoliosController(FundConnContext context, IPortfolioRepository dataRepository)
         {
             _context = context;
             _portfolioRepository = dataRepository;
@@ -28,7 +28,7 @@ namespace FundConnRec.API.Controllers
 
         // GET: api/Portfolios
         [HttpGet]
-        public async Task<IActionResult> GetPortfolios()
+        public IActionResult GetPortfolios()
         {
             try
             {
@@ -51,7 +51,7 @@ namespace FundConnRec.API.Controllers
             }
             try
             {
-                var portfolio = await _context.Portfolios.Where(x => x.ISIN == isin && x.Date == date.Date).FirstOrDefaultAsync();
+                var portfolio = await _portfolioRepository.Get(isin, date.Date);
                 if (portfolio == null)
                 {
                     return NotFound();
@@ -110,8 +110,7 @@ namespace FundConnRec.API.Controllers
             }
             try
             {
-                _context.Portfolios.Add(portfolio);
-                await _context.SaveChangesAsync();
+                await _portfolioRepository.Add(portfolio);
             }
             catch (Exception ex)
             {
@@ -129,16 +128,20 @@ namespace FundConnRec.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            var portfolio = await _context.Portfolios.FindAsync(id);
-            if (portfolio == null)
+            try
+            {
+                Portfolio portfolio = await _portfolioRepository.Get(id);
+                await this._portfolioRepository.Delete(portfolio);
+                return Ok(id);
+            }
+            catch(ArgumentException)
             {
                 return NotFound();
             }
-
-            _context.Portfolios.Remove(portfolio);
-            await _context.SaveChangesAsync();
-
-            return Ok(portfolio);
+            catch(Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
         }
 
         private bool PortfolioExists(int id)

@@ -8,9 +8,9 @@ namespace FundConnRec.API.Repositories.Interfaces
     public interface IDataRepository<TEntity>
     {
         IEnumerable<TEntity> GetAll();
-        TEntity Get(long id);
-        void Add(TEntity entity);
+        Task<TEntity> Get(long id);
+        Task Add(TEntity entity);
         void Update(TEntity dbEntity, TEntity entity);
-        void Delete(TEntity entity);
+        Task Delete(TEntity entity);
     }
 }

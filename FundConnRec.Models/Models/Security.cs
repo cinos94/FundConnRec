@@ -18,6 +18,6 @@ namespace FundConnRec.Models.Models
         public string Country { get; set; }
 
         [JsonIgnore]
-        public ICollection<Position> Positions { get; set; }
+        public virtual ICollection<Position> Positions { get; set; }
     }
 }

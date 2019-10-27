@@ -16,6 +16,6 @@ namespace FundConnRec.Models.Models
 
         public DateTime Date { get; set; }
 
-        public ICollection<Position> Positions { get; set; }
+        public virtual ICollection<Position> Positions { get; set; }
     }
 }

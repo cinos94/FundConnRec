@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace FundConnRec.API.Repositories
 {
-    public class PortfolioRepository : IDataRepository<Portfolio>
+    public class PortfolioRepository : IPortfolioRepository
     {
         private readonly FundConnContext _context;
 
@@ -18,25 +18,46 @@ namespace FundConnRec.API.Repositories
             _context = context;
         }
 
-        public void Add(Portfolio entity)
+        public async Task Add(Portfolio entity)
         {
-            throw new NotImplementedException();
+            entity.Date = entity.Date.Date;
+            Portfolio portfolioInDB = await Get(entity.ISIN, entity.Date);
+            if (portfolioInDB == null)
+            {
+                _context.Securities.AddRange(entity.Positions.Select(x => x.Security)); //to be fixed
+                _context.Portfolios.Add(entity);
+                await _context.SaveChangesAsync();
+            }
+            else throw new Exception("There is already Portfolio with ISIN and Date speicfied");
         }
 
-        public void Delete(Portfolio entity)
+        public async Task Delete(Portfolio entity)
         {
-            throw new NotImplementedException();
+            var portfolio = await _context.Portfolios.FindAsync(entity.PortfolioId);
+            if (portfolio == null)
+            {
+                throw new ArgumentException(nameof(Portfolio));
+            }
+
+            _context.Portfolios.Remove(portfolio);
+            await _context.SaveChangesAsync();
         }
 
-        public Portfolio Get(long id)
+        public async Task<Portfolio> Get(long id)
         {
-            throw new NotImplementedException();
+            return await _context.Portfolios.Where(x => x.PortfolioId == id).FirstOrDefaultAsync();
+        }
+
+        public async Task<Portfolio> Get(string isin, DateTime date)
+        {
+            return await _context.Portfolios.Where(x => x.ISIN == isin && x.Date == date.Date).FirstOrDefaultAsync();
         }
 
         public IEnumerable<Portfolio> GetAll()
         {
-            _context.Positions.Include(x => x.Security).ToList();
-            return _context.Portfolios.Include(x => x.Positions).ToList();
+            return _context.Portfolios.ToList();
+           // _context.Positions.Include(x => x.Security).ToList();
+           // return _context.Portfolios.Include(x => x.Positions).ToList();
         }
 
         public void Update(Portfolio dbEntity, Portfolio entity)
